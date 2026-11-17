@@ -1,5 +1,5 @@
-/** Tank the rhino, FormUp's mascot (from the design team's spec). Moods: ready, cheer, worried, stern. */
-export type Mood = 'ready' | 'cheer' | 'worried' | 'stern';
+/** Tank the rhino, FormUp's mascot (from the design team's spec). Moods: ready, cheer, worried, stern, sleep. */
+export type Mood = 'ready' | 'cheer' | 'worried' | 'stern' | 'sleep';
 export function rhino(mood: Mood): string {
   const dark = '#1A1E28';
   let eyes: string, brows = "", mouth: string, arms = "";
@@ -8,6 +8,9 @@ export function rhino(mood: Mood): string {
     eyes = `<path d="M38 57q6-8 12 0M70 57q6-8 12 0" fill="none" stroke="${dark}" stroke-width="3.6" stroke-linecap="round"/>`;
     mouth = `<path d="M49 85 q11 14 22 0 z" fill="${dark}"/><path d="M54 90 q6 4 12 0 q-6 -3 -12 0z" fill="#E7848C"/>`;
     arms = `<path d="M28 102 L12 78" stroke="#8591A7" stroke-width="13" stroke-linecap="round"/><path d="M92 102 L108 78" stroke="#8591A7" stroke-width="13" stroke-linecap="round"/><circle cx="11" cy="75" r="8" fill="#9AA5BA"/><circle cx="109" cy="75" r="8" fill="#9AA5BA"/>`;
+  } else if (mood === 'sleep') {
+    eyes = `<path d="M38 55q6 5 12 0M70 55q6 5 12 0" fill="none" stroke="${dark}" stroke-width="3.4" stroke-linecap="round"/>`;
+    mouth = `<ellipse cx="60" cy="89" rx="3.5" ry="4" fill="${dark}"/>`;
   } else {
     eyes = dot(43) + dot(75);
     if (mood === 'worried') { brows = `<path d="M36 47 L49 43M84 47 L71 43" stroke="${dark}" stroke-width="3.4" stroke-linecap="round"/>`; mouth = `<path d="M53 91 q7 -5 14 0" fill="none" stroke="${dark}" stroke-width="3" stroke-linecap="round"/>`; }
