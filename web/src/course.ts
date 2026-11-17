@@ -224,7 +224,7 @@ export const UNITS: Unit[] = [
     id: 'u1',
     title: 'Unit 1 · Legs basics',
     subtitle: 'Squats, wall sits and leg stretches',
-    color: '#FF6B2C',
+    color: '#33BF66',
     lessons: [
       {
         id: 'u1l1',
@@ -307,7 +307,7 @@ export const UNITS: Unit[] = [
     id: 'u3',
     title: 'Unit 3 · Athletic',
     subtitle: 'High knees, lunges, bridges',
-    color: '#33BF66',
+    color: '#A78BFA',
     lessons: [
       { id: 'u3l1', title: 'High knees', format: 'Warm-up', emoji: '🏃', xp: 10, steps: [{ kind: 'reps', exercise: 'highknees', reps: 30 }] },
       { id: 'u3l2', title: 'Lunges', format: 'Rep Set', emoji: '🚶', xp: 15, steps: [{ kind: 'reps', exercise: 'lunge', reps: 10 }] },

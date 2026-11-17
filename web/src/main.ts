@@ -121,12 +121,12 @@ function renderLearn() {
   const STEP = 92;
   let html = '';
   for (const unit of UNITS) {
-    html += `<div class="unit" style="background:${unit.color}"><small>${esc(unit.title.split('·')[0].trim())}</small><b>${esc(unit.title.split('·')[1]?.trim() ?? unit.title)}</b><span>${esc(unit.subtitle)}</span></div>`;
+    html += `<div class="unit" style="background:${unit.color};box-shadow:0 4px 0 color-mix(in srgb, ${unit.color} 70%, #000)"><small>${esc(unit.title.split('·')[0].trim())}</small><b>${esc(unit.title.split('·')[1]?.trim() ?? unit.title)}</b><span>${esc(unit.subtitle)}</span></div>`;
     const n = unit.lessons.length;
-    const height = 40 + (n + 1) * STEP;
+    const height = 56 + (n + 1) * STEP;
     html += `<div class="path" style="height:${height}px">`;
     unit.lessons.forEach((lesson, k) => {
-      const top = 46 + k * STEP;
+      const top = 62 + k * STEP;
       const x = XS[k % XS.length];
       const done = profile.completed.includes(lesson.id);
       const now = current?.id === lesson.id;
@@ -142,7 +142,7 @@ function renderLearn() {
         html += `<span class="tank" style="${side};top:${top - 18}px">${rhino('ready')}</span>`;
       }
     });
-    const chestTop = 46 + n * STEP;
+    const chestTop = 62 + n * STEP;
     const allDone = unit.lessons.every((l) => profile.completed.includes(l.id));
     html += `<div class="node chest" style="left:50%;top:${chestTop}px" aria-label="Unit reward${allDone ? ', earned' : ''}"><svg><use href="#i-trophy"/></svg></div>`;
     html += `</div>`;
@@ -328,6 +328,7 @@ let active: Active | null = null;
 let ending = false;
 let introTimer = 0;
 let lastSetupSpoken = 0;
+let setupCard = false;
 
 async function startCameraStep(step: Exclude<Step, { kind: 'quiz' }>) {
   show('workout');
@@ -440,7 +441,9 @@ stage.onFrame = (pose, now, aspect) => {
     lastSetupSpoken = now;
     say('Step back so your whole body is in view');
   }
-  const showSetup = setup && !hasProgress(a);
+  // The big card only until a body is seen; after that the cue pill near the bottom guides.
+  const showSetup = setup && !hasProgress(a) && !pose;
+  setupCard = showSetup;
   $('setup').hidden = !showSetup;
   if (showSetup) {
     const st = $('setupStatus');
@@ -539,16 +542,16 @@ stage.drawHud = (ctx: CanvasRenderingContext2D, v: View, now: number) => {
   pill(ctx, label, cx, barY + u * 9, u * 3.6, 'rgba(0,0,0,0.5)', u * 1.6, 800);
   ctx.restore();
 
-  const big = u * 16;
+  const big = u * 17; // about 64px+ on a phone, readable from 2 m
   const topY = v.y + v.h * 0.2;
   let cue: { text: string; tone: string } | null = null;
   if (a.kind === 'hold') {
     const s = a.state;
     const secs = Math.floor(s.heldMs / 1000);
-    ring(ctx, cx, topY + u * 2, big * 0.85, s.heldMs / s.targetMs, s.phase === 'holding' ? COLORS.good : COLORS.warn, u * 2.2);
-    pill(ctx, `${secs}s`, cx, topY + u * 2, big * 0.7, null, 0, 900);
-    pill(ctx, `of ${Math.round(s.targetMs / 1000)}s`, cx, topY + big * 1.2, u * 4, null, 0, 700);
-    if (!(s.phase === 'setup' && s.heldMs === 0)) cue = s.cue;
+    ring(ctx, cx, topY + u * 4, big * 1.15, s.heldMs / s.targetMs, s.phase === 'holding' ? COLORS.good : COLORS.warn, u * 2.2);
+    pill(ctx, `${secs}s`, cx, topY + u * 4, big, null, 0, 900);
+    pill(ctx, `of ${Math.round(s.targetMs / 1000)}s`, cx, topY + big * 1.65, u * 4.2, null, 0, 700);
+    if (!setupCard) cue = s.cue;
   } else {
     const s = a.state;
     const goal = a.kind === 'reps' ? s.target : a.step.goal;
@@ -559,7 +562,7 @@ stage.drawHud = (ctx: CanvasRenderingContext2D, v: View, now: number) => {
       const warn = left < 10_000 && a.startedAt !== null;
       pill(ctx, `⏱ ${formatTime(left)}`, cx, topY + big * 1.65, u * 5.5, warn ? COLORS.warn : 'rgba(0,0,0,0.5)', u * 1.8, 900);
     }
-    if (!(s.phase === 'setup' && s.reps === 0 && !s.lastRep)) cue = s.cue;
+    if (!setupCard) cue = s.cue;
   }
   if (cue) {
     const bg = cue.tone === 'good' ? COLORS.good : cue.tone === 'warn' ? COLORS.warn : COLORS.info;
