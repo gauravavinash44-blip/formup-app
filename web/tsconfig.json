@@ -9,5 +9,5 @@
     "noEmit": true,
     "isolatedModules": true
   },
-  "include": ["src", "../src/exercises/squat.ts", "../src/pose", "../src/clip/timeline.ts"]
+  "include": ["src", "../src/exercises/engine.ts", "../src/exercises/library.ts", "../src/pose"]
 }

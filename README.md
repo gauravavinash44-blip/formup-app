@@ -37,16 +37,34 @@ unless you share it.
 | `modules/coach-clip/` | Small native module (Swift + Kotlin) that burns the overlay into the video. iOS uses AVFoundation, Android uses Media3 Transformer. |
 | `assets/models/` | MediaPipe pose models (`full` is used by default, `lite` for older phones). |
 
-## Try it in a browser (quickest)
+## Web app (main focus for v1)
 
-`web/` is a browser version of the same squat camera. It reuses the counting
-and form rules from `src/exercises/squat.ts` and runs MediaPipe in the
-browser, so you can test on any phone by opening a link.
+`web/` is the FormUp web app: a Duolingo-style lesson path that runs in any
+phone browser, free, with no install. Pose detection runs in the browser with
+MediaPipe; no video is uploaded.
 
-- Live link (once GitHub Pages is on for the `gh-pages` branch): https://gauravavinash44-blip.github.io/formup-app/
+- **Learn tab**: 3 units of short lessons. Formats: Warm-up, Rep Set, Hold It,
+  Beat the Clock (only good-form reps count) and Fix the Form (spot the mistake
+  in a stick figure, no camera).
+- **15 exercises** in `src/exercises/library.ts` (squats, push-ups, lunges,
+  bridges, jumping jacks, high knees, press, curls, lateral raises, plank,
+  wall sit, deep squat hold, quad stretch, forward fold, overhead reach), all
+  driven by the generic engine in `src/exercises/engine.ts`.
+- **XP and streaks**: rep targets grow by 1 every 3 streak days (up to +5).
+- **Penalty set ("rhino tax")**: miss 1 to 3 days and you owe 10 squats per
+  missed day to keep your streak.
+- **Progress tab**: XP per day, form trend, totals and badges.
+- **Recording on demand**: the red button records the camera with the skeleton
+  and counter; save or share it at the end.
+- Progress is saved in the browser (localStorage). No account yet.
+
+Live link: https://gauravavinash44-blip.github.io/formup-app/ (needs GitHub
+Pages on, branch `gh-pages`). Add `?model=full` for the more accurate pose
+model. For testing streaks, `?days-ago=2` pretends your last workout was 2 days
+ago.
+
 - Run locally: `cd web && npm install && npm run dev`, then open the printed address.
 - Deploy: `cd web && npm run build`, then publish `web/dist` to the `gh-pages` branch.
-- Add `?model=full` to the link for the more accurate (slower) pose model.
 
 ## Run it on your phone
 
