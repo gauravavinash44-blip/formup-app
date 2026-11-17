@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0E1116" />
-    <meta name="description" content="FormUp: your phone counts your reps and checks your form." />
-    <title>FormUp</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="description" content="FormUp: the free alarm you can only stop by moving. Your camera counts the reps." />
+    <title>FormUp Alarm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       rel="stylesheet"
@@ -14,247 +15,176 @@
   </head>
   <body>
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M6.5 7v10M3.5 9.5v5M17.5 7v10M20.5 9.5v5M6.5 12h11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
-      <symbol id="i-timer" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M9.5 2.5h5"/></g></symbol>
-      <symbol id="i-target" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></g><circle cx="12" cy="12" r="1.3" fill="currentColor"/></symbol>
-      <symbol id="i-hold" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2"/><path d="M4 9.5l8-1 8 1M12 8.5v6l-4 6.5M12 14.5l4 6.5"/></g></symbol>
-      <symbol id="i-trophy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5h8v6a4 4 0 0 1-8 0z"/><path d="M8 5.5H4.5a3.5 3.5 0 0 0 3.8 4.5M16 5.5h3.5a3.5 3.5 0 0 1-3.8 4.5M12 13.5v4M8.5 20.5h7"/></g></symbol>
-      <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12.5 2.5c.8 3.4 5.5 5.5 5.5 11a6 6 0 0 1-12 0c0-3 1.7-4.8 3-6 .1 2.3 1.2 3.4 2.4 3.4.2-3.5-.9-5.6 1.1-8.4z" fill="currentColor"/></symbol>
-      <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.5 2L5 13.8h6.2L10 22l8.8-12.2h-6.2z" fill="currentColor"/></symbol>
-      <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9.5h-5.5V15h-5v5.5H4z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/></symbol>
+      <symbol id="i-alarm" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9v4.2l2.6 1.8M3.5 6.5l3-3M20.5 6.5l-3-3"/></g></symbol>
       <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V12M10.5 20V5M16 20v-9M21.5 20H2.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
-      <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5.5" y="11" width="13" height="9.5" rx="2.5"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></g></symbol>
-      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
-      <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3.5v11.5M7.5 8l4.5-4.5L16.5 8M5 13v5.5A2 2 0 0 0 7 20.5h10a2 2 0 0 0 2-2V13" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3.5v12M7.5 11l4.5 4.5 4.5-4.5M5 20.5h14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="i-alarm" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9v4.2l2.6 1.8M3.5 6.5l3-3M20.5 6.5l-3-3M6.5 20.5l-1.5 1.5M17.5 20.5l1.5 1.5"/></g></symbol>
+      <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3L5.5 5.5"/></g></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
       <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12.5 2.5c.8 3.4 5.5 5.5 5.5 11a6 6 0 0 1-12 0c0-3 1.7-4.8 3-6 .1 2.3 1.2 3.4 2.4 3.4.2-3.5-.9-5.6 1.1-8.4z" fill="currentColor"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     </svg>
-    <!-- Learn: the lesson path -->
-    <main id="learn" class="page">
-      <header class="topbar">
-        <span class="logo"><span class="logo-rhino" data-rhino="ready"></span>FormUp</span>
-        <span class="pill-stat streak" title="Day streak"><svg><use href="#i-flame"/></svg><b id="streakStat">0</b></span>
-        <span class="pill-stat xp" title="Total XP"><svg><use href="#i-bolt"/></svg><b id="xpStat">0</b></span>
+
+    <!-- 1. Splash -->
+    <section id="splash" class="screen splash">
+      <div class="splash-rhino" data-rhino="ready"></div>
+      <div class="splash-name">FormUp</div>
+      <div class="splash-tag">Move to wake up.</div>
+    </section>
+
+    <!-- 2-8. Onboarding (steps rendered by app.ts) -->
+    <section id="onb" class="screen onb" hidden>
+      <header class="onb-top">
+        <button type="button" class="icon-btn" id="onbBack" aria-label="Back"><svg><use href="#i-back"/></svg></button>
+        <div class="onb-bar"><i id="onbBar"></i></div>
+        <button type="button" class="skip" id="onbSkip">Skip</button>
       </header>
-      <section class="penalty" id="penaltyCard" hidden>
-        <div class="penalty-rhino" data-rhino="stern"></div>
-        <div>
-          <strong id="penaltyTitle">Pay the rhino tax</strong>
-          <p id="penaltyText">Do a penalty set to keep your streak.</p>
-        </div>
-        <button type="button" id="penaltyBtn">Pay it</button>
-      </section>
-      <div id="path"></div>
-      <p class="fine">Everything runs on your phone; no video is uploaded. Form tips are guidance, not medical advice.</p>
-    </main>
+      <div class="onb-body" id="onbBody"></div>
+      <footer class="onb-foot">
+        <button type="button" class="btn cta" id="onbNext">Continue</button>
+        <button type="button" class="link" id="onbAlt" hidden></button>
+      </footer>
+    </section>
 
-    <!-- Progress -->
-    <main id="progress" class="page" hidden>
-      <header class="topbar"><span class="logo">Your progress</span></header>
-      <div class="tiles" id="tiles"></div>
-      <section class="card">
-        <h2>XP, last 14 days</h2>
-        <div id="xpChart" class="chart"></div>
-      </section>
-      <section class="card">
-        <h2>Good form, last 10 lessons</h2>
-        <div id="formChart" class="chart"></div>
-      </section>
-      <section class="card">
-        <h2>Badges</h2>
-        <div class="badges" id="badges"></div>
-      </section>
-      <button type="button" class="link" id="resetBtn">Reset my progress</button>
-    </main>
+    <!-- 9. Home / 13. History / 14. Settings -->
+    <section id="main" class="screen main" hidden>
+      <div id="tab-alarms" class="tab">
+        <header class="top">
+          <div><small id="greet">Good evening</small><h1>Alarms</h1></div>
+          <span class="streak-pill" id="streakPill"><svg><use href="#i-flame"/></svg><b>0</b></span>
+        </header>
+        <button type="button" class="hero" id="hero">
+          <span class="hero-label" id="heroLabel">Next alarm</span>
+          <span class="hero-time" id="heroTime">--:--</span>
+          <span class="hero-sub" id="heroSub"></span>
+        </button>
+        <button type="button" class="btn cta night" id="bedsideBtn"><svg><use href="#i-moon"/></svg>Start bedside mode</button>
+        <div class="list" id="alarmList"></div>
+        <button type="button" class="fab" id="addAlarm" aria-label="New alarm"><svg><use href="#i-plus"/></svg></button>
+      </div>
 
-    <!-- Alarms -->
-    <main id="alarm" class="page" hidden>
-      <header class="topbar"><span class="logo">Wake-up alarms</span></header>
-      <section class="next-card" id="nextCard">
-        <div class="next-rhino" data-rhino="sleep"></div>
-        <div class="next-text">
-          <small id="nextLabel">Next alarm</small>
-          <strong id="nextTime">No alarm set</strong>
-          <span id="nextSub">Set one and Tank makes sure you get up.</span>
-        </div>
-      </section>
-      <button type="button" class="btn cta" id="bedsideBtn"><svg><use href="#i-moon"/></svg>Start bedside mode</button>
-      <div class="alarm-list" id="alarmList"></div>
-      <button type="button" class="btn ghost" id="addAlarm"><svg><use href="#i-plus"/></svg>New alarm</button>
-      <section class="card how">
-        <h2>How it works</h2>
-        <ol>
-          <li>At night, open FormUp, tap <b>Start bedside mode</b> and leave your phone on the charger, screen up.</li>
-          <li>When it rings, the only way to stop it is to do your reps on camera. No snooze.</li>
-          <li>Tank cheers, you earn XP and your streak grows.</li>
-        </ol>
-        <p class="hint">Keep your ringer on and the volume up. A web page can't ring while your phone is locked or FormUp is closed, so keep it open.</p>
-      </section>
-      <section class="card how">
-        <h2>Want it to ring even when locked?</h2>
-        <p class="hint">Use your phone's own alarm and let it hand you to FormUp. Free and built in on iPhone:</p>
-        <ol>
-          <li>Open the <b>Shortcuts</b> app, then <b>Automation</b>, then <b>+</b>.</li>
-          <li>Pick <b>Alarm</b>, then <b>Is Stopped</b>, then <b>Run Immediately</b>.</li>
-          <li>Add the action <b>Open URLs</b> and paste your FormUp wake-up link.</li>
-        </ol>
-        <button type="button" class="btn ghost" id="copyLink">Copy wake-up link</button>
-        <p class="status" id="copyStatus"></p>
-      </section>
-      <button type="button" class="link" id="testAlarm">Try a test alarm now</button>
-    </main>
+      <div id="tab-history" class="tab" hidden>
+        <header class="top"><div><small>Your mornings</small><h1>History</h1></div></header>
+        <div class="tiles" id="tiles"></div>
+        <section class="card"><h2>This week</h2><div class="week" id="week"></div></section>
+        <section class="card"><h2>Wake-ups</h2><div class="hist" id="hist"></div></section>
+      </div>
 
-    <nav class="tabs" id="tabs">
-      <button type="button" data-tab="learn" class="on"><svg><use href="#i-home"/></svg>Learn</button>
-      <button type="button" data-tab="alarm"><svg><use href="#i-alarm"/></svg>Alarm</button>
-      <button type="button" data-tab="progress"><svg><use href="#i-chart"/></svg>Progress</button>
-    </nav>
-
-    <!-- Lesson sheet -->
-    <div class="sheet-backdrop" id="sheet" hidden>
-      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-        <div class="sheet-head">
-          <span class="sheet-emoji" id="sheetEmoji">🦵</span>
-          <div>
-            <span class="format" id="sheetFormat">Rep Set</span>
-            <h2 id="sheetTitle">First squats</h2>
+      <div id="tab-settings" class="tab" hidden>
+        <header class="top"><div><small>Make it yours</small><h1>Settings</h1></div></header>
+        <section class="card">
+          <h2>Default alarm sound</h2>
+          <div class="chips" id="setSound"></div>
+        </section>
+        <section class="card">
+          <div class="row-set">
+            <div><b>Safety stop</b><span>Hold a button for 10 seconds to stop without moving. Use it if you're unwell or the camera fails.</span></div>
+            <button type="button" class="switch" role="switch" id="setSafety" aria-checked="true" aria-label="Safety stop"></button>
           </div>
-        </div>
-        <ul class="steps" id="sheetSteps"></ul>
-        <div id="cameraPick">
-          <div class="label">Camera</div>
-          <div class="chips" id="cameras">
-            <button type="button" class="chip wide on" data-facing="user">Front (see yourself)</button>
-            <button type="button" class="chip wide" data-facing="environment">Back</button>
-          </div>
-          <p class="hint">Reps are counted as soon as the camera sees you. Tap the red button any time to record a clip.</p>
-        </div>
-        <button type="button" class="btn cta" id="sheetStart">Start · +15 XP</button>
-        <button type="button" class="link" id="sheetClose">Not now</button>
-      </section>
-    </div>
+        </section>
+        <section class="card">
+          <h2>Ring even when your iPhone is locked</h2>
+          <p class="hint">A web page can't ring while the phone is locked or FormUp is closed. Your phone's own alarm can hand you to FormUp instead:</p>
+          <ol class="steps">
+            <li>Open <b>Shortcuts</b>, then <b>Automation</b>, then <b>+</b>.</li>
+            <li>Choose <b>Alarm</b>, then <b>Is Stopped</b>, then <b>Run Immediately</b>.</li>
+            <li>Add <b>Open URLs</b> and paste your wake-up link.</li>
+          </ol>
+          <button type="button" class="btn ghost" id="copyLink">Copy wake-up link</button>
+          <p class="status" id="copyStatus"></p>
+        </section>
+        <section class="card">
+          <button type="button" class="row-link" id="testAlarm"><span>Try a test alarm</span><svg><use href="#i-chev"/></svg></button>
+          <button type="button" class="row-link" id="replayOnb"><span>Replay the intro</span><svg><use href="#i-chev"/></svg></button>
+          <a class="row-link" href="./classic.html"><span>Open the lesson-path version</span><svg><use href="#i-chev"/></svg></a>
+          <button type="button" class="row-link danger" id="resetAll"><span>Erase all data on this device</span><svg><use href="#i-chev"/></svg></button>
+        </section>
+        <p class="fine">FormUp is free. The camera runs on your phone and no video leaves it. Tips are guidance, not medical advice.</p>
+      </div>
+
+      <nav class="tabs" id="tabs">
+        <button type="button" data-tab="alarms" class="on"><svg><use href="#i-alarm"/></svg>Alarms</button>
+        <button type="button" data-tab="history"><svg><use href="#i-chart"/></svg>History</button>
+        <button type="button" data-tab="settings"><svg><use href="#i-gear"/></svg>Settings</button>
+      </nav>
+    </section>
 
     <!-- Alarm editor -->
-    <div class="sheet-backdrop" id="alarmSheet" hidden>
-      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="alarmSheetTitle">
-        <h2 id="alarmSheetTitle">New alarm</h2>
-        <input type="time" id="alarmTime" class="time-input" value="07:00" aria-label="Alarm time" />
+    <div class="sheet-bg" id="editor" hidden>
+      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="edTitle">
+        <div class="sheet-head">
+          <button type="button" class="link" id="edCancel">Cancel</button>
+          <h2 id="edTitle">New alarm</h2>
+          <button type="button" class="link strong" id="edSave">Save</button>
+        </div>
+        <input type="time" id="edTime" class="time-input" value="07:00" aria-label="Alarm time" />
         <div class="label">Repeat</div>
-        <div class="chips days" id="alarmDays"></div>
-        <div class="label">Wake-up mission</div>
-        <div class="chips wrap" id="alarmExercise"></div>
+        <div class="chips days" id="edDays"></div>
+        <div class="label">Wake-up move</div>
+        <div class="moves" id="edMove"></div>
         <div class="label">Reps</div>
-        <div class="stepper">
-          <button type="button" class="round" id="repsMinus" aria-label="Fewer reps">−</button>
-          <b id="alarmReps">15</b>
-          <button type="button" class="round" id="repsPlus" aria-label="More reps">+</button>
-        </div>
+        <div class="chips" id="edReps"></div>
         <div class="label">Sound</div>
-        <div class="chips wrap" id="alarmSound"></div>
+        <div class="chips" id="edSound"></div>
         <div class="label">Label</div>
-        <input type="text" id="alarmLabel" class="text-input" maxlength="40" placeholder="Rise and grind" />
-        <button type="button" class="btn cta" id="alarmSave">Save alarm</button>
-        <div class="row">
-          <button type="button" class="btn ghost" id="alarmIcs">Add to calendar</button>
-          <button type="button" class="btn ghost danger" id="alarmDelete">Delete</button>
+        <input type="text" id="edLabel" class="text-input" maxlength="40" placeholder="Optional" />
+        <div class="sheet-actions">
+          <button type="button" class="btn ghost" id="edIcs">Add to calendar</button>
+          <button type="button" class="btn ghost danger" id="edDelete">Delete alarm</button>
         </div>
-        <button type="button" class="link" id="alarmCancel">Cancel</button>
       </section>
     </div>
 
     <!-- Bedside mode -->
-    <main id="bedside" class="bedside" hidden>
+    <section id="bedside" class="screen bedside" hidden>
       <div class="bed-clock" id="bedClock">7:00</div>
       <div class="bed-date" id="bedDate"></div>
       <div class="bed-rhino"><div data-rhino="sleep"></div><span class="zzz" aria-hidden="true"><i>z</i><i>z</i><i>Z</i></span></div>
-      <p class="bed-next" id="bedNext">Alarm at 7:00 · 15 squats</p>
+      <p class="bed-next" id="bedNext"></p>
       <ul class="bed-checks" id="bedChecks"></ul>
       <button type="button" class="link" id="bedExit">Exit bedside mode</button>
-    </main>
+    </section>
 
-    <!-- Ringing -->
-    <main id="ringing" class="ringing" hidden>
+    <!-- 10. Ringing -->
+    <section id="ringing" class="screen ringing" hidden>
       <div class="ring-time" id="ringTime">7:00</div>
+      <div class="ring-label" id="ringLabel"></div>
       <div class="ring-rhino" data-rhino="stern"></div>
-      <h1 id="ringTitle">Up and at 'em!</h1>
-      <p class="ring-task" id="ringTask">15 squats and I stop stomping.</p>
-      <button type="button" class="btn cta" id="ringGo">Start squats</button>
+      <h1 id="ringTitle">Time to move!</h1>
+      <p class="ring-task" id="ringTask">15 squats to switch me off.</p>
+      <button type="button" class="btn cta white" id="ringGo">Start</button>
       <button type="button" class="hold" id="ringBail"><i></i><span>Hold 10 s to stop without moving</span></button>
-    </main>
+    </section>
 
-    <!-- Workout (camera) -->
-    <main id="workout" class="workout" hidden>
+    <!-- 11. Reps on camera -->
+    <section id="cam" class="screen cam" hidden>
       <canvas id="stage"></canvas>
       <video id="video" playsinline muted></video>
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <p id="loadingText">Starting camera…</p>
+      <div class="loading" id="camLoading"><div class="spinner"></div><p id="camLoadingText">Starting camera…</p></div>
+      <div class="frame-card" id="frameCard" hidden>
+        <strong>Step into view</strong>
+        <span id="frameHow">Prop your phone up and step back until your whole body fits.</span>
       </div>
-      <div class="intro" id="intro" hidden>
-        <span class="intro-step" id="introStep">Exercise 1 of 2</span>
-        <div class="intro-emoji" id="introEmoji">🦵</div>
-        <strong id="introName">10 squats</strong>
-        <span id="introHow">Feet shoulder width, sit back and down, stand tall</span>
-        <span class="intro-setup" id="introSetup">📱 Phone on the floor, 2 to 3 m away</span>
-        <button type="button" class="btn cta" id="introGo">Start now <span id="introCount">5</span></button>
+      <div class="cam-foot">
+        <button type="button" class="hold dark" id="camBail"><i></i><span>Hold 10 s to stop</span></button>
       </div>
-      <div class="setup" id="setup" hidden>
-        <strong>Get in the frame</strong>
-        <span>Step back until your whole body is in view. Counting starts by itself.</span>
-        <span id="setupStatus" class="warn">Looking for you…</span>
-      </div>
-      <div class="controls">
-        <button type="button" class="round" id="closeBtn" aria-label="Quit lesson"><svg><use href="#i-x"/></svg></button>
-        <button type="button" class="finish" id="nextBtn">Done</button>
-        <button type="button" class="hold small" id="workBail" hidden><i></i><span>Hold 10 s to stop</span></button>
-        <button type="button" class="record" id="recordBtn" aria-label="Start recording"><span></span></button>
-      </div>
-    </main>
+    </section>
 
-    <!-- Fix the Form quiz -->
-    <main id="quiz" class="page quiz" hidden>
-      <header class="quiz-top">
-        <button type="button" class="round" id="quizClose" aria-label="Quit lesson"><svg><use href="#i-x"/></svg></button>
-        <div class="bar"><i id="quizBar"></i></div>
-      </header>
-      <h1 id="quizPrompt">What's wrong with this squat?</h1>
-      <div class="figure-box" id="quizFigure"></div>
-      <div class="options" id="quizOptions"></div>
-      <section class="feedback" id="quizFeedback" hidden>
-        <strong id="quizVerdict">Correct!</strong>
-        <p id="quizExplain"></p>
-        <button type="button" class="btn cta" id="quizNext">Continue</button>
-      </section>
-    </main>
-
-    <!-- Result -->
-    <main id="result" class="page result" hidden>
-      <div class="mascot" id="resultMascot" aria-hidden="true"></div>
-      <h1 id="resultTitle">Lesson complete!</h1>
-      <div class="xp-earned" id="xpEarned">+15 XP</div>
-      <p class="streak-line" id="streakLine">🔥 1 day streak</p>
-      <div class="stats">
-        <div><b id="statReps">0</b><span id="statRepsLabel">Reps</span></div>
-        <div><b id="statGood">0%</b><span>Good form</span></div>
-        <div><b id="statTime">0:00</b><span>Time</span></div>
+    <!-- 12. You're up -->
+    <section id="win" class="screen win" hidden>
+      <div class="confetti" id="confetti" aria-hidden="true"></div>
+      <div class="win-rhino" data-rhino="cheer"></div>
+      <h1 id="winTitle">You're up!</h1>
+      <p class="win-sub" id="winSub">Alarm off. Have a great day.</p>
+      <div class="win-stats">
+        <div><b id="winTime">0:00</b><span>Ring to done</span></div>
+        <div><b id="winReps">0</b><span>Reps</span></div>
+        <div><b id="winStreak">1</b><span>Day streak</span></div>
       </div>
-      <div class="dots" id="dots"></div>
-      <div class="new-badges" id="newBadges"></div>
-      <section class="clip" id="clipCard" hidden>
-        <h2>Your coach clip</h2>
-        <video id="clipVideo" playsinline loop muted controls></video>
-        <div class="row">
-          <button type="button" id="saveBtn" class="btn ghost"><svg><use href="#i-down"/></svg>Save</button>
-          <button type="button" id="shareBtn" class="btn"><svg><use href="#i-share"/></svg>Share</button>
-        </div>
-        <p class="status" id="clipStatus"></p>
-      </section>
-      <p class="hint center" id="noClip">Tip: tap the red button during a set to record a clip you can share.</p>
-      <button type="button" class="btn cta" id="againBtn">Continue</button>
-    </main>
-    <script type="module" src="./src/main.ts"></script>
+      <button type="button" class="btn cta" id="winDone">Start my day</button>
+    </section>
+
+    <script type="module" src="./src/app.ts"></script>
   </body>
 </html>

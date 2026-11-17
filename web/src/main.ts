@@ -14,8 +14,6 @@ import {
   type QuizQuestion,
   type Step,
 } from './course';
-import { siren } from './alarm';
-import { initAlarms, type AlarmRun } from './alarm-ui';
 import { rhino } from './rhino';
 import {
   BADGES,
@@ -62,10 +60,10 @@ function formatTime(ms: number) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
-export type ViewId = 'learn' | 'progress' | 'alarm' | 'bedside' | 'ringing' | 'workout' | 'quiz' | 'result';
+type ViewId = 'learn' | 'progress' | 'workout' | 'quiz' | 'result';
 function show(view: ViewId) {
-  for (const v of ['learn', 'progress', 'alarm', 'bedside', 'ringing', 'workout', 'quiz', 'result'] as const) $(v).hidden = v !== view;
-  $('tabs').hidden = !(view === 'learn' || view === 'progress' || view === 'alarm');
+  for (const v of ['learn', 'progress', 'workout', 'quiz', 'result'] as const) $(v).hidden = v !== view;
+  $('tabs').hidden = !(view === 'learn' || view === 'progress');
   document.querySelectorAll<HTMLButtonElement>('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === view));
   window.scrollTo(0, 0);
 }
@@ -258,28 +256,21 @@ interface Run {
   startMs: number;
   tally: Tally;
   isPenalty: boolean;
-  /** Set when this run is a wake-up alarm: the alarm rings until the reps are done. */
-  alarm?: AlarmRun;
 }
 
 let run: Run | null = null;
 
-function startLesson(lesson: Lesson, alarm?: AlarmRun) {
+function startLesson(lesson: Lesson) {
   const isPenalty = lesson.id === 'penalty';
   run = {
-    alarm,
     lesson,
-    steps: alarm ? lesson.steps : lesson.steps.map((s) => scaled(s, isPenalty)),
+    steps: lesson.steps.map((s) => scaled(s, isPenalty)),
     index: 0,
     startMs: Date.now(),
     isPenalty,
     tally: { reps: 0, goodReps: 0, holdMs: 0, goodHoldMs: 0, dots: [], quizRight: 0, quizTotal: 0, clockHit: null },
   };
   say(''); // unlock speech on iOS: it must start from a tap
-  // Alarm runs can't be skipped or quit with one tap: only the reps (or a long hold) stop them.
-  $('closeBtn').hidden = !!alarm;
-  $('nextBtn').hidden = !!alarm;
-  $('workBail').hidden = !alarm;
   runStep();
 }
 
@@ -306,7 +297,6 @@ function nextStep() {
 }
 
 function quitLesson() {
-  if (run?.alarm) siren.stop();
   active = null;
   clearInterval(introTimer);
   if (stage.recording) void stage.finishRecording();
@@ -355,12 +345,6 @@ async function startCameraStep(step: Exclude<Step, { kind: 'quiz' }>) {
       return;
     }
     $('loading').hidden = true;
-  }
-  if (run?.alarm) {
-    // No countdown when the alarm is ringing: counting starts as soon as you're in frame.
-    $('intro').hidden = true;
-    begin(step);
-    return;
   }
   showIntro(step);
 }
@@ -447,7 +431,6 @@ stage.onFrame = (pose, now, aspect) => {
     }
     if (a.kind === 'clock' && a.startedAt === null && !setup) a.startedAt = now;
     if (rep) onRep(a, rep, now);
-    if (run?.alarm && a.kind === 'reps') siren.setCalm(a.state.reps / a.state.target);
     if (a.kind === 'reps' && a.state.done) endStep('Set complete! Great work.');
     if (a.kind === 'clock' && a.startedAt !== null && now - a.startedAt >= a.step.seconds * 1000) {
       const hit = a.state.reps >= a.step.goal;
@@ -503,7 +486,6 @@ function endStep(message?: string) {
     t.goodReps += a.state.goodReps;
     if (a.kind === 'clock') t.clockHit = (t.clockHit ?? true) && a.state.reps >= a.step.goal;
   }
-  if (run!.alarm) siren.stop();
   if (message) say(message);
   buzz([80, 60, 160]);
   setTimeout(() => {
@@ -705,9 +687,7 @@ async function finishLesson() {
   $('resultMascot').innerHTML = rhino(did ? 'cheer' : 'worried');
   $('resultTitle').textContent = !did
     ? 'No reps this time'
-    : r.alarm
-      ? 'Good morning, champ!'
-      : r.isPenalty
+    : r.isPenalty
       ? 'Tax paid. Streak saved!'
       : t.clockHit === false
         ? 'Close one! Lesson done.'
@@ -738,7 +718,7 @@ async function finishLesson() {
     clipVideo.removeAttribute('src');
   }
   show('result');
-  if (did) say(r.alarm ? `Good morning! Alarm off. Plus ${xp} XP.` : r.isPenalty ? 'Streak saved!' : `Lesson complete! Plus ${xp} XP.`);
+  if (did) say(r.isPenalty ? 'Streak saved!' : `Lesson complete! Plus ${xp} XP.`);
 }
 
 function clipFile() {
@@ -771,10 +751,8 @@ $('shareBtn').addEventListener('click', async () => {
 });
 
 $('againBtn').addEventListener('click', () => {
-  const wasAlarm = !!run?.alarm;
   run = null;
-  if (wasAlarm) alarms.open();
-  else showHome();
+  showHome();
 });
 
 /* ---------- Progress ---------- */
@@ -865,8 +843,7 @@ $('tabs').addEventListener('click', (e) => {
   if (btn.dataset.tab === 'progress') {
     renderProgress();
     show('progress');
-  } else if (btn.dataset.tab === 'alarm') alarms.open();
-  else showHome();
+  } else showHome();
 });
 
 // Debug helper for testing streaks and penalties: ?days-ago=N pretends the last workout was N days ago.
@@ -876,14 +853,7 @@ if (daysAgo > 0 && profile.lastActive) {
   save(profile);
 }
 
-const alarms = initAlarms({
-  show,
-  busy: () => !!run,
-  start: (lesson, alarm) => startLesson(lesson, alarm),
-  quit: () => quitLesson(),
-});
-
 fillRhinos();
-if (!alarms.boot()) showHome();
+showHome();
 // Start downloading the model while the person looks at the path.
 getLandmarker().catch((e) => console.warn('Model preload failed', e));
