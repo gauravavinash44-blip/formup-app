@@ -1,20 +1,37 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+
+import { APP } from './src/config';
+import { HomeScreen, type WorkoutSettings } from './src/screens/HomeScreen';
+import { ResultScreen } from './src/screens/ResultScreen';
+import { WorkoutScreen, type SessionResult } from './src/screens/WorkoutScreen';
+
+type Screen = { name: 'home' } | { name: 'workout' } | { name: 'result'; result: SessionResult };
 
 export default function App() {
+  const [screen, setScreen] = useState<Screen>({ name: 'home' });
+  const [settings, setSettings] = useState<WorkoutSettings>({
+    target: APP.defaultTarget,
+    position: 'front',
+  });
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <StatusBar style="light" />
+      {screen.name === 'home' && (
+        <HomeScreen settings={settings} onChange={setSettings} onStart={() => setScreen({ name: 'workout' })} />
+      )}
+      {screen.name === 'workout' && (
+        <WorkoutScreen
+          target={settings.target}
+          position={settings.position}
+          onCancel={() => setScreen({ name: 'home' })}
+          onFinish={(result) => setScreen({ name: 'result', result })}
+        />
+      )}
+      {screen.name === 'result' && (
+        <ResultScreen result={screen.result} onDone={() => setScreen({ name: 'home' })} />
+      )}
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
