@@ -181,6 +181,7 @@ export const BADGES: Badge[] = [
   },
   { id: 'penalty', emoji: '⚖️', name: 'Paid in full', how: 'Clear a penalty set', earned: (p) => p.history.some((h) => h.penalty) },
   { id: 'clip', emoji: '🎬', name: 'Director', how: 'Record a coach clip', earned: (p) => p.clips > 0 },
+  { id: 'riser', emoji: '⏰', name: 'Early riser', how: 'Beat a wake-up alarm', earned: (p) => p.history.some((h) => h.lessonId === 'alarm') },
   { id: 'xp500', emoji: '⭐', name: 'Rising star', how: 'Earn 500 XP', earned: (p) => p.xp >= 500 },
 ];
 

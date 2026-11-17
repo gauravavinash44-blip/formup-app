@@ -28,6 +28,9 @@
       <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
       <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3.5v11.5M7.5 8l4.5-4.5L16.5 8M5 13v5.5A2 2 0 0 0 7 20.5h10a2 2 0 0 0 2-2V13" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3.5v12M7.5 11l4.5 4.5 4.5-4.5M5 20.5h14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-alarm" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9v4.2l2.6 1.8M3.5 6.5l3-3M20.5 6.5l-3-3M6.5 20.5l-1.5 1.5M17.5 20.5l1.5 1.5"/></g></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></symbol>
     </svg>
     <!-- Learn: the lesson path -->
     <main id="learn" class="page">
@@ -67,8 +70,46 @@
       <button type="button" class="link" id="resetBtn">Reset my progress</button>
     </main>
 
+    <!-- Alarms -->
+    <main id="alarm" class="page" hidden>
+      <header class="topbar"><span class="logo">Wake-up alarms</span></header>
+      <section class="next-card" id="nextCard">
+        <div class="next-rhino" data-rhino="sleep"></div>
+        <div class="next-text">
+          <small id="nextLabel">Next alarm</small>
+          <strong id="nextTime">No alarm set</strong>
+          <span id="nextSub">Set one and Tank makes sure you get up.</span>
+        </div>
+      </section>
+      <button type="button" class="btn cta" id="bedsideBtn"><svg><use href="#i-moon"/></svg>Start bedside mode</button>
+      <div class="alarm-list" id="alarmList"></div>
+      <button type="button" class="btn ghost" id="addAlarm"><svg><use href="#i-plus"/></svg>New alarm</button>
+      <section class="card how">
+        <h2>How it works</h2>
+        <ol>
+          <li>At night, open FormUp, tap <b>Start bedside mode</b> and leave your phone on the charger, screen up.</li>
+          <li>When it rings, the only way to stop it is to do your reps on camera. No snooze.</li>
+          <li>Tank cheers, you earn XP and your streak grows.</li>
+        </ol>
+        <p class="hint">Keep your ringer on and the volume up. A web page can't ring while your phone is locked or FormUp is closed, so keep it open.</p>
+      </section>
+      <section class="card how">
+        <h2>Want it to ring even when locked?</h2>
+        <p class="hint">Use your phone's own alarm and let it hand you to FormUp. Free and built in on iPhone:</p>
+        <ol>
+          <li>Open the <b>Shortcuts</b> app, then <b>Automation</b>, then <b>+</b>.</li>
+          <li>Pick <b>Alarm</b>, then <b>Is Stopped</b>, then <b>Run Immediately</b>.</li>
+          <li>Add the action <b>Open URLs</b> and paste your FormUp wake-up link.</li>
+        </ol>
+        <button type="button" class="btn ghost" id="copyLink">Copy wake-up link</button>
+        <p class="status" id="copyStatus"></p>
+      </section>
+      <button type="button" class="link" id="testAlarm">Try a test alarm now</button>
+    </main>
+
     <nav class="tabs" id="tabs">
       <button type="button" data-tab="learn" class="on"><svg><use href="#i-home"/></svg>Learn</button>
+      <button type="button" data-tab="alarm"><svg><use href="#i-alarm"/></svg>Alarm</button>
       <button type="button" data-tab="progress"><svg><use href="#i-chart"/></svg>Progress</button>
     </nav>
 
@@ -96,6 +137,54 @@
       </section>
     </div>
 
+    <!-- Alarm editor -->
+    <div class="sheet-backdrop" id="alarmSheet" hidden>
+      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="alarmSheetTitle">
+        <h2 id="alarmSheetTitle">New alarm</h2>
+        <input type="time" id="alarmTime" class="time-input" value="07:00" aria-label="Alarm time" />
+        <div class="label">Repeat</div>
+        <div class="chips days" id="alarmDays"></div>
+        <div class="label">Wake-up mission</div>
+        <div class="chips wrap" id="alarmExercise"></div>
+        <div class="label">Reps</div>
+        <div class="stepper">
+          <button type="button" class="round" id="repsMinus" aria-label="Fewer reps">−</button>
+          <b id="alarmReps">15</b>
+          <button type="button" class="round" id="repsPlus" aria-label="More reps">+</button>
+        </div>
+        <div class="label">Sound</div>
+        <div class="chips wrap" id="alarmSound"></div>
+        <div class="label">Label</div>
+        <input type="text" id="alarmLabel" class="text-input" maxlength="40" placeholder="Rise and grind" />
+        <button type="button" class="btn cta" id="alarmSave">Save alarm</button>
+        <div class="row">
+          <button type="button" class="btn ghost" id="alarmIcs">Add to calendar</button>
+          <button type="button" class="btn ghost danger" id="alarmDelete">Delete</button>
+        </div>
+        <button type="button" class="link" id="alarmCancel">Cancel</button>
+      </section>
+    </div>
+
+    <!-- Bedside mode -->
+    <main id="bedside" class="bedside" hidden>
+      <div class="bed-clock" id="bedClock">7:00</div>
+      <div class="bed-date" id="bedDate"></div>
+      <div class="bed-rhino"><div data-rhino="sleep"></div><span class="zzz" aria-hidden="true"><i>z</i><i>z</i><i>Z</i></span></div>
+      <p class="bed-next" id="bedNext">Alarm at 7:00 · 15 squats</p>
+      <ul class="bed-checks" id="bedChecks"></ul>
+      <button type="button" class="link" id="bedExit">Exit bedside mode</button>
+    </main>
+
+    <!-- Ringing -->
+    <main id="ringing" class="ringing" hidden>
+      <div class="ring-time" id="ringTime">7:00</div>
+      <div class="ring-rhino" data-rhino="stern"></div>
+      <h1 id="ringTitle">Up and at 'em!</h1>
+      <p class="ring-task" id="ringTask">15 squats and I stop stomping.</p>
+      <button type="button" class="btn cta" id="ringGo">Start squats</button>
+      <button type="button" class="hold" id="ringBail"><i></i><span>Hold 10 s to stop without moving</span></button>
+    </main>
+
     <!-- Workout (camera) -->
     <main id="workout" class="workout" hidden>
       <canvas id="stage"></canvas>
@@ -120,6 +209,7 @@
       <div class="controls">
         <button type="button" class="round" id="closeBtn" aria-label="Quit lesson"><svg><use href="#i-x"/></svg></button>
         <button type="button" class="finish" id="nextBtn">Done</button>
+        <button type="button" class="hold small" id="workBail" hidden><i></i><span>Hold 10 s to stop</span></button>
         <button type="button" class="record" id="recordBtn" aria-label="Start recording"><span></span></button>
       </div>
     </main>
