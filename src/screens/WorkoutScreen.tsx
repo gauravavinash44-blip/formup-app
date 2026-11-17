@@ -43,7 +43,6 @@ export interface SessionResult {
 interface Props {
   target: number;
   position: CameraPosition;
-  record: boolean;
   onFinish: (result: SessionResult) => void;
   onCancel: () => void;
 }
@@ -58,7 +57,7 @@ function say(text: string) {
   Speech.speak(text, { rate: 1.05 });
 }
 
-export function WorkoutScreen({ target, position, record, onFinish, onCancel }: Props) {
+export function WorkoutScreen({ target, position, onFinish, onCancel }: Props) {
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice(position);
   // 720p keeps both pose detection and the recorded file light.
@@ -73,17 +72,19 @@ export function WorkoutScreen({ target, position, record, onFinish, onCancel }: 
   const [squat, setSquat] = useState<SquatState>(() => counter.state(Date.now()));
   const [points, setPoints] = useState<PosePoint[] | null>(null);
   const [goodFlashUntil, setGoodFlashUntil] = useState(0);
-  const [started, setStarted] = useState(false);
   const [recording, setRecording] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const viewSize = useRef<Size>({ width: 1, height: 1 });
-  const startMs = useRef(0);
+  const startMs = useRef(Date.now());
   const repsDetail = useRef<RepResult[]>([]);
   const lastSpokenSetup = useRef(0);
+  const greeted = useRef(false);
   const goodFlashRef = useRef(0);
   const finished = useRef(false);
   const doneHandled = useRef(false);
   const recordingRef = useRef(false);
+  /** The most recent finished recording, handed to the result screen. */
+  const lastClip = useRef<SessionResult['clip']>(undefined);
 
   useEffect(() => {
     if (!hasPermission) requestPermission();
@@ -96,49 +97,88 @@ export function WorkoutScreen({ target, position, record, onFinish, onCancel }: 
     [],
   );
 
-  const onRep = useCallback(
-    (rep: RepResult, state: SquatState, now: number) => {
-      repsDetail.current.push(rep);
-      if (!rep.counted) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        say('Go deeper');
-        return;
-      }
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      if (rep.quality === 'good') {
-        goodFlashRef.current = now + 700;
-        setGoodFlashUntil(now + 700);
-      }
-      const count = NUMBER_WORDS[state.reps] ?? String(state.reps);
-      say(rep.quality === 'good' ? count : `${count}. ${ISSUE_CUES[rep.issues[0]]}`);
-    },
-    [],
-  );
+  const result = useCallback((): SessionResult => {
+    const s = counter.state(Date.now());
+    return {
+      reps: s.reps,
+      goodReps: s.goodReps,
+      target,
+      durationMs: Date.now() - startMs.current,
+      reps_detail: repsDetail.current,
+      clip: lastClip.current,
+    };
+  }, [counter, target]);
 
-  const finish = useCallback(async () => {
+  const onRep = useCallback((rep: RepResult, state: SquatState, now: number) => {
+    repsDetail.current.push(rep);
+    if (!rep.counted) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      say('Go deeper');
+      return;
+    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (rep.quality === 'good') {
+      goodFlashRef.current = now + 700;
+      setGoodFlashUntil(now + 700);
+    }
+    const count = NUMBER_WORDS[state.reps] ?? String(state.reps);
+    say(rep.quality === 'good' ? count : `${count}. ${ISSUE_CUES[rep.issues[0]]}`);
+  }, []);
+
+  /** Start or stop a recording. Counting keeps running either way. */
+  const toggleRecord = useCallback(() => {
+    const cam = cameraRef.current;
+    if (!cam) return;
+    if (recordingRef.current) {
+      cam.stopRecording().catch((e) => console.warn('Stop recording failed', e));
+      return;
+    }
+    const mirrored = position === 'front' && APP.flipFrontClipOverlay;
+    cam.startRecording({
+      fileType: 'mp4',
+      onRecordingFinished: (video) => {
+        const frames = timeline.stop();
+        recordingRef.current = false;
+        setRecording(false);
+        lastClip.current = {
+          videoPath: video.path,
+          videoSize: { width: video.width, height: video.height },
+          viewSize: viewSize.current,
+          frames,
+          mirrored,
+        };
+        if (finished.current) onFinish(result());
+      },
+      onRecordingError: (e) => {
+        console.warn('Recording error', e);
+        timeline.stop();
+        recordingRef.current = false;
+        setRecording(false);
+        if (finished.current) onFinish(result());
+      },
+    });
+    timeline.start(Date.now());
+    recordingRef.current = true;
+    setRecording(true);
+  }, [onFinish, position, result, timeline]);
+
+  const finish = useCallback(() => {
     if (finished.current) return;
     finished.current = true;
     setFinishing(true);
-    const base = {
-      reps: counter.state(Date.now()).reps,
-      goodReps: counter.state(Date.now()).goodReps,
-      target,
-      durationMs: startMs.current ? Date.now() - startMs.current : 0,
-      reps_detail: repsDetail.current,
-    };
-    if (!recordingRef.current || !cameraRef.current) {
-      onFinish(base);
-      return;
+    if (recordingRef.current && cameraRef.current) {
+      // onRecordingFinished hands over the result once the file is written.
+      cameraRef.current.stopRecording().catch(() => onFinish(result()));
+    } else {
+      onFinish(result());
     }
-    // The recording callback in start() hands over the clip.
-    await cameraRef.current.stopRecording().catch(() => onFinish(base));
-  }, [counter, onFinish, target]);
+  }, [onFinish, result]);
 
   const handleResults = useCallback(
-    (result: PoseDetectionResultBundle, vc: ViewCoordinator) => {
+    (bundle: PoseDetectionResultBundle, vc: ViewCoordinator) => {
       const now = Date.now();
-      const landmarks = result.results[0]?.landmarks[0];
-      const frameDims = vc.getFrameDims(result);
+      const landmarks = bundle.results[0]?.landmarks[0];
+      const frameDims = vc.getFrameDims(bundle);
       const aspect = frameDims.width / frameDims.height;
 
       let viewPoints: PosePoint[] | null = null;
@@ -149,15 +189,19 @@ export function WorkoutScreen({ target, position, record, onFinish, onCancel }: 
         });
       }
       setPoints(viewPoints);
+      if (finished.current) return;
 
-      if (!started || finished.current) return;
-
+      // Counting is always on while the camera is open.
       const rep = counter.update(landmarks ?? null, now, aspect);
       const state = counter.state(now);
       setSquat(state);
       if (rep) onRep(rep, state, now);
 
-      if (state.phase === 'setup' && now - lastSpokenSetup.current > 6000) {
+      if (state.phase === 'up' && !greeted.current) {
+        greeted.current = true;
+        say(`I can see you. Let's do ${target} squats.`);
+      }
+      if (state.phase === 'setup' && now - lastSpokenSetup.current > 8000) {
         lastSpokenSetup.current = now;
         say(state.cue.text);
       }
@@ -173,13 +217,12 @@ export function WorkoutScreen({ target, position, record, onFinish, onCancel }: 
 
       if (state.done && !doneHandled.current) {
         doneHandled.current = true;
-        setFinishing(true);
         say('Set complete! Great work.');
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         setTimeout(finish, APP.finishDelayMs);
       }
     },
-    [counter, finish, onRep, started, timeline],
+    [counter, finish, onRep, target, timeline],
   );
 
   const pose = usePoseDetection(
@@ -195,57 +238,6 @@ export function WorkoutScreen({ target, position, record, onFinish, onCancel }: 
   useEffect(() => {
     if (device) pose.cameraDeviceChangeHandler(device);
   }, [device, pose]);
-
-  const start = useCallback(() => {
-    finished.current = false;
-    startMs.current = Date.now();
-    setStarted(true);
-    say(`Let's do ${target} squats. Squat down.`);
-    if (!record || !cameraRef.current) return;
-    const mirrored = position === 'front';
-    cameraRef.current.startRecording({
-      fileType: 'mp4',
-      onRecordingFinished: (video) => {
-        const frames = timeline.stop();
-        recordingRef.current = false;
-        setRecording(false);
-        const s = counter.state(Date.now());
-        onFinish({
-          reps: s.reps,
-          goodReps: s.goodReps,
-          target,
-          durationMs: Date.now() - startMs.current,
-          reps_detail: repsDetail.current,
-          clip: {
-            videoPath: video.path,
-            videoSize: { width: video.width, height: video.height },
-            viewSize: viewSize.current,
-            frames,
-            mirrored: mirrored && APP.flipFrontClipOverlay,
-          },
-        });
-      },
-      onRecordingError: (e) => {
-        console.warn('Recording error', e);
-        timeline.stop();
-        recordingRef.current = false;
-        setRecording(false);
-        const s = counter.state(Date.now());
-        if (finished.current) {
-          onFinish({
-            reps: s.reps,
-            goodReps: s.goodReps,
-            target,
-            durationMs: Date.now() - startMs.current,
-            reps_detail: repsDetail.current,
-          });
-        }
-      },
-    });
-    timeline.start(Date.now());
-    recordingRef.current = true;
-    setRecording(true);
-  }, [counter, onFinish, position, record, target, timeline]);
 
   if (!hasPermission) {
     return (
@@ -276,7 +268,7 @@ export function WorkoutScreen({ target, position, record, onFinish, onCancel }: 
         device={device}
         format={format}
         isActive
-        video={record}
+        video
         audio={false}
         pixelFormat="rgb"
         resizeMode="cover"
@@ -292,33 +284,38 @@ export function WorkoutScreen({ target, position, record, onFinish, onCancel }: 
         }}
       />
       <SkeletonOverlay points={points} highlight={Date.now() < goodFlashUntil} />
-      {started ? (
-        <Hud state={squat} goodFlash={Date.now() < goodFlashUntil} recording={recording} />
-      ) : (
+      <Hud state={squat} goodFlash={Date.now() < goodFlashUntil} recording={recording} />
+      {squat.phase === 'setup' && squat.reps === 0 ? (
         <View style={styles.setup} pointerEvents="none">
           <Text style={styles.setupTitle}>Place your phone on the floor</Text>
           <Text style={styles.setupBody}>
-            Step back until your whole body, head to feet, is in the frame. A side or front view both work.
+            Step back until your whole body, head to feet, is in the frame. Counting starts by itself.
           </Text>
           <Text style={[styles.setupBody, { color: points ? COLORS.good : COLORS.warn }]}>
-            {points ? 'I can see you 👍' : 'Looking for you…'}
+            {points ? 'Almost there, stand tall 👍' : 'Looking for you…'}
           </Text>
         </View>
-      )}
+      ) : null}
       <View style={styles.controls}>
         <Pressable style={styles.secondary} onPress={onCancel}>
           <Text style={styles.secondaryText}>✕</Text>
         </Pressable>
-        {started ? (
-          <Pressable style={[styles.primary, styles.stop]} onPress={finish} disabled={finishing}>
-            <Text style={styles.primaryText}>{finishing ? 'Finishing…' : 'Finish'}</Text>
-          </Pressable>
-        ) : (
-          <Pressable style={styles.primary} onPress={start}>
-            <Text style={styles.primaryText}>{record ? 'Start & record' : 'Start'}</Text>
-          </Pressable>
-        )}
-        <View style={styles.secondary} />
+        <Pressable
+          style={[styles.primary, styles.stop]}
+          onPress={finish}
+          disabled={finishing}
+          accessibilityLabel="Finish workout"
+        >
+          <Text style={styles.primaryText}>{finishing ? 'Finishing…' : 'Finish'}</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.recordButton, recording && styles.recordButtonOn]}
+          onPress={toggleRecord}
+          disabled={finishing}
+          accessibilityLabel={recording ? 'Stop recording' : 'Start recording'}
+        >
+          <View style={recording ? styles.recordSquare : styles.recordDot} />
+        </Pressable>
       </View>
     </View>
   );
@@ -355,7 +352,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 32,
     paddingVertical: 16,
-    minWidth: 180,
+    minWidth: 160,
     alignItems: 'center',
   },
   stop: { backgroundColor: '#2B3240' },
@@ -369,4 +366,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   secondaryText: { color: 'white', fontSize: 20, fontWeight: '700' },
+  recordButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 4,
+    borderColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  recordButtonOn: { borderColor: '#FF3B30' },
+  recordDot: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#FF3B30' },
+  recordSquare: { width: 22, height: 22, borderRadius: 5, backgroundColor: '#FF3B30' },
 });

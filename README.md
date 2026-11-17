@@ -18,7 +18,8 @@ unless you share it.
   - "Push your knees out" when the knees cave in (front view only)
   - "Slow down" for reps faster than 0.7 s
 - **Setup check**: asks you to step back until your whole body is in view.
-- **Recording**: optional; when on, the session is recorded and you get two clips:
+- **Always-on counting**: reps are counted as soon as the camera sees you, no start button.
+- **Recording on demand**: nothing is recorded until you tap the red Record button (tap again to stop). You then get two clips:
   - **Coach clip**: the video with the skeleton, rep counter, cue, check mark on good reps and FormUp branding drawn into every frame
   - **Clean clip**: the plain video
   
@@ -35,6 +36,17 @@ unless you share it.
 | `src/screens/` | Home, Workout (camera) and Result (celebration + clip) screens. |
 | `modules/coach-clip/` | Small native module (Swift + Kotlin) that burns the overlay into the video. iOS uses AVFoundation, Android uses Media3 Transformer. |
 | `assets/models/` | MediaPipe pose models (`full` is used by default, `lite` for older phones). |
+
+## Try it in a browser (quickest)
+
+`web/` is a browser version of the same squat camera. It reuses the counting
+and form rules from `src/exercises/squat.ts` and runs MediaPipe in the
+browser, so you can test on any phone by opening a link.
+
+- Live link (once GitHub Pages is on for the `gh-pages` branch): https://gauravavinash44-blip.github.io/formup-app/
+- Run locally: `cd web && npm install && npm run dev`, then open the printed address.
+- Deploy: `cd web && npm run build`, then publish `web/dist` to the `gh-pages` branch.
+- Add `?model=full` to the link for the more accurate (slower) pose model.
 
 ## Run it on your phone
 
@@ -53,15 +65,16 @@ Or, with Android Studio installed and the phone plugged in: `npx expo run:androi
 
 ### iPhone
 
-- With a Mac and Xcode: `npx expo run:ios --device`.
-- Without a Mac: `npx eas-cli@latest build --profile development --platform ios`. Installing on a real iPhone needs an Apple Developer account ($99/year); EAS walks you through registering the device.
+- **Free, with a Mac:** install Xcode, sign in with your Apple ID in Xcode > Settings > Accounts, plug in the iPhone, then run `npx expo run:ios --device`. On the iPhone, trust the developer in Settings > General > VPN & Device Management. Apps signed with a free Apple ID stop opening after 7 days; run the command again to reinstall.
+- **With an Apple Developer account ($99/year):** `npx eas-cli@latest build --profile development --platform ios` builds in the cloud and installs over the air; it is also what TestFlight and the App Store need.
 
 ## How to test it
 
 1. Put the phone on the floor or a low shelf, leaning against something, about 2 to 3 m away.
 2. Front camera lets you see yourself; back camera gives better quality.
-3. Step back until "I can see you 👍" shows, tap **Start & record**, and squat.
-4. After the set, wait for the coach clip to render, then try **Save** and **Share**.
+3. Tap **Start squats** and step back until your whole body is in view. Counting starts by itself.
+4. Tap the red button whenever you want to record, and again to stop.
+5. After the set, wait for the coach clip to render, then try **Save** and **Share**.
 
 Things worth checking on a real phone and reporting back:
 - Does the counter ever miss a rep or count twice?

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { CameraPosition } from 'react-native-vision-camera';
 
 import { APP, COLORS } from '../config';
@@ -7,7 +7,6 @@ import { APP, COLORS } from '../config';
 export interface WorkoutSettings {
   target: number;
   position: CameraPosition;
-  record: boolean;
 }
 
 interface Props {
@@ -53,17 +52,9 @@ export function HomeScreen({ settings, onChange, onStart }: Props) {
           ))}
         </View>
 
-        <View style={styles.switchRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.switchTitle}>Record a clip</Text>
-            <Text style={styles.switchHint}>Saved on your phone only. Watch out for other people in frame at the gym.</Text>
-          </View>
-          <Switch
-            value={settings.record}
-            onValueChange={(record) => onChange({ ...settings, record })}
-            trackColor={{ true: COLORS.brand }}
-          />
-        </View>
+        <Text style={styles.hint}>
+          Reps are counted as soon as the camera sees you. Tap the red button any time to record a clip.
+        </Text>
       </View>
 
       <Pressable style={styles.start} onPress={onStart}>
@@ -88,9 +79,7 @@ const styles = StyleSheet.create({
   chipOn: { backgroundColor: COLORS.brand },
   chipText: { color: COLORS.muted, fontWeight: '700' },
   chipTextOn: { color: 'white' },
-  switchRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 8 },
-  switchTitle: { color: COLORS.text, fontSize: 16, fontWeight: '700' },
-  switchHint: { color: COLORS.muted, fontSize: 13 },
+  hint: { color: COLORS.muted, fontSize: 13, marginTop: 8 },
   start: {
     alignSelf: 'stretch',
     backgroundColor: COLORS.brand,

@@ -13,7 +13,6 @@ export default function App() {
   const [settings, setSettings] = useState<WorkoutSettings>({
     target: APP.defaultTarget,
     position: 'front',
-    record: true,
   });
 
   return (
@@ -26,7 +25,6 @@ export default function App() {
         <WorkoutScreen
           target={settings.target}
           position={settings.position}
-          record={settings.record}
           onCancel={() => setScreen({ name: 'home' })}
           onFinish={(result) => setScreen({ name: 'result', result })}
         />

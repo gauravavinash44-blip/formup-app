@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0E1116" />
+    <title>FormUp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Inter:wght@400;600;700;800&display=swap"
+    />
+  </head>
+  <body>
+    <!-- Home -->
+    <main id="home" class="home">
+      <div class="mascot" aria-hidden="true">🦏</div>
+      <h1 class="brand">FormUp</h1>
+      <p class="tagline">Your phone counts the reps and checks your form.</p>
+      <section class="card">
+        <h2>Today: Squats</h2>
+        <div class="label">Reps</div>
+        <div class="chips" id="targets">
+          <button type="button" class="chip" data-target="10">10</button>
+          <button type="button" class="chip on" data-target="15">15</button>
+          <button type="button" class="chip" data-target="20">20</button>
+        </div>
+        <div class="label">Camera</div>
+        <div class="chips" id="cameras">
+          <button type="button" class="chip wide on" data-facing="user">Front (see yourself)</button>
+          <button type="button" class="chip wide" data-facing="environment">Back</button>
+        </div>
+        <p class="hint">Reps are counted as soon as the camera sees you. Tap the red button any time to record a clip.</p>
+      </section>
+      <button type="button" id="startBtn" class="cta">Start squats</button>
+      <p class="fine">Prototype. Everything runs on your phone; no video is uploaded. Form tips are guidance, not medical advice.</p>
+    </main>
+
+    <!-- Workout -->
+    <main id="workout" class="workout" hidden>
+      <canvas id="stage"></canvas>
+      <video id="video" playsinline muted></video>
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p id="loadingText">Starting camera…</p>
+      </div>
+      <div class="setup" id="setup" hidden>
+        <strong>Place your phone on the floor</strong>
+        <span>Step back until your whole body, head to feet, is in the frame. Counting starts by itself.</span>
+        <span id="setupStatus" class="warn">Looking for you…</span>
+      </div>
+      <div class="controls">
+        <button type="button" class="round" id="closeBtn" aria-label="Back to home">✕</button>
+        <button type="button" class="finish" id="finishBtn">Finish</button>
+        <button type="button" class="record" id="recordBtn" aria-label="Start recording"><span></span></button>
+      </div>
+    </main>
+
+    <!-- Result -->
+    <main id="result" class="result" hidden>
+      <div class="mascot big" aria-hidden="true">🦏</div>
+      <h1 id="resultTitle">Set complete!</h1>
+      <div class="stats">
+        <div><b id="statReps">0/15</b><span>Reps</span></div>
+        <div><b id="statGood">0%</b><span>Good form</span></div>
+        <div><b id="statTime">0:00</b><span>Time</span></div>
+      </div>
+      <div class="dots" id="dots"></div>
+      <section class="clip" id="clipCard" hidden>
+        <h2>Your coach clip</h2>
+        <video id="clipVideo" playsinline loop muted controls></video>
+        <div class="row">
+          <button type="button" id="saveBtn">Save</button>
+          <button type="button" id="shareBtn" class="primary">Share</button>
+        </div>
+        <p class="status" id="clipStatus"></p>
+      </section>
+      <p class="hint center" id="noClip">Tip: tap the red button during your set to record a clip you can share.</p>
+      <button type="button" class="cta" id="againBtn">Continue</button>
+    </main>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
